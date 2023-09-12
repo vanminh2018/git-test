@@ -1,9 +1,0 @@
-aaaaaa
-them tu web
-
-lan 1
-lan 2
-lan 3
-
-from new: lan 1
-from new: lan 2
