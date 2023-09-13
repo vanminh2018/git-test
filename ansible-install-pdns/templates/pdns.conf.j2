@@ -1,0 +1,16 @@
+api=yes
+api-key={{ pdns_apikey }}
+launch=gpgsql
+gpgsql-port=5432
+gpgsql-dbname={{ pdns_db }}
+gpgsql-user={{ pdns_db_user }}
+gpgsql-password={{ pdns_pwd }}
+gpgsql-dnssec=yes
+loglevel=4
+setgid=pdns
+setuid=pdns
+webserver=yes
+webserver-password={{ pdnsadmin_salt }}
+webserver-address=0.0.0.0
+webserver-allow-from=0.0.0.0/0
+webserver-port=8081

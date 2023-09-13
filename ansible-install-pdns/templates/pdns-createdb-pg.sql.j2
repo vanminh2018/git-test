@@ -1,0 +1,4 @@
+-- PowerDNS PGSQL Create DB File
+CREATE USER {{ pdns_db_user }} WITH ENCRYPTED PASSWORD '{{ pdns_pwd }}';
+CREATE DATABASE {{ pdns_db }} OWNER {{ pdns_db_user }};
+GRANT ALL PRIVILEGES ON DATABASE {{ pdns_db }} TO {{ pdns_db_user }};

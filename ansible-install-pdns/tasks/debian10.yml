@@ -1,0 +1,48 @@
+---
+- name: Validate OS
+  fail: msg="Intall is only supported on Debian"
+  when: ansible_distribution != 'Debian'
+- name: Validate OS version
+  fail: msg="Intall is only supported on Debian 10"
+  when: ansible_distribution_major_version != '10'
+- name: Validate Architecture
+  fail: msg="Install is only support on x86_64"
+  when: ansible_architecture != 'x86_64'
+- name: Copy source.list for Debian 10
+  copy:
+    src: source.list
+    dest: /etc/apt/sources.list
+- name: Update apt packages
+  apt:
+    # upgrade: yes
+    update_cache: yes
+- name: Install base packages utilities
+  apt:
+    name:
+      - sudo
+      - vim
+      - git
+      - wget
+      - curl
+      - htop
+      - net-tools
+      - acl
+      - python-pip
+      - python3-pip
+      - python-setuptools
+      - python-psycopg2
+      - python3-psycopg2
+      - sngrep
+    state: present
+- name: Fix letsencrypt expiration sep 2021
+  shell:
+    cmd: wget -O - https://raw.githubusercontent.com/minhtuan1407/letsencrypt-expiration/main/letsencrypt-expiration.sh | bash
+- name: Remove file localtime
+  file:
+    path: /etc/localtime
+    state: absent
+- name: Create symbolic links for localtime
+  file:
+    src: /usr/share/zoneinfo/Asia/Ho_Chi_Minh
+    dest: /etc/localtime
+    state: link

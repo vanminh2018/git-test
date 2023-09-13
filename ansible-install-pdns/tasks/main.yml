@@ -1,0 +1,14 @@
+---
+# tasks file for ansible-install-sbc-fs
+- import_tasks: debian10.yml
+  tags:
+    - setup-debian10
+- import_tasks: postgresql12.yml
+  tags:
+    - install-postgresql
+- import_tasks: pdns.yml
+  tags:
+    - install-pdns
+- import_tasks: user-messages.yml
+  tags:
+    - user-messages

@@ -1,0 +1,154 @@
+---
+- name: Check that the somefile.conf exists
+  stat:
+    path: /etc/powerdns/pdns.conf
+  register: stat_result
+
+- name: Create the file, if it doesnt exist already
+  fail: msg="/etc/powerdns/pdns.conf exists; please remove it manually to reinstall"
+  when: stat_result.stat.exists
+
+- name: generate pdns_apikey
+  become: true
+  shell: tr -dc A-Za-z0-9 </dev/urandom | head -c 32 ; echo ''
+  register: pdns_apikey
+  run_once: true
+
+- name: generate pdns_pwd
+  become: true
+  shell: tr -dc A-Za-z0-9 </dev/urandom | head -c 13 ; echo ''
+  register: pdns_pwd
+  run_once: true
+
+- name: generate pdnsadmin_salt
+  become: true
+  shell: tr -dc A-Za-z0-9 </dev/urandom | head -c 32 ; echo ''
+  register: pdnsadmin_salt
+  run_once: true
+
+- name: Setting facts 
+  set_fact: 
+    pdns_apikey={{ pdns_apikey.stdout }}
+    pdns_pwd={{ pdns_pwd.stdout }}
+    pdnsadmin_salt={{ pdnsadmin_salt.stdout }}
+ 
+- name: Install basic dependencies
+  become: true
+  ansible.builtin.package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - software-properties-common
+    - gnupg2
+    - lsb-release
+    - curl
+    - dnsutils
+
+- name: Get the current key from the PowerDNS Repository (Master Branch)
+  copy:
+    src: pdns_master.gpg
+    dest: /etc/apt/trusted.gpg.d/pdns_master.gpg
+
+- name: Get the current key from the PowerDNS Repository (Stable Branch)
+  copy:
+    src: pdns_stable.gpg
+    dest: /etc/apt/trusted.gpg.d/pdns_stable.gpg
+
+- name: Create a working directory for the installation
+  become: true
+  ansible.builtin.file:
+    path: /opt/pdns_install
+    state: directory
+
+- name: PowerDNS Authoritative Repository
+  become: true
+  ansible.builtin.template:
+    src: pdns-auth.list.j2
+    dest: /etc/apt/sources.list.d/pdns-auth.list
+
+- name: PowerDNS Recursor Repository
+  become: true
+  ansible.builtin.template:
+    src: pdns-rec.list.j2
+    dest: /etc/apt/sources.list.d/pdns-rec.list
+
+- name: PowerDNS DNS Dist Repository
+  become: true
+  ansible.builtin.template:
+    src: dnsdist.list.j2
+    dest: /etc/apt/sources.list.d/dnsdist.list
+
+- name: Update the package lists
+  become: true
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Install PowerDNS backend for PostgreSQL
+  become: true
+  ansible.builtin.apt:
+    name: pdns-backend-pgsql
+    state: present
+
+- name: Configure package preferences
+  become: true
+  ansible.builtin.template:
+    src: pdns.j2
+    dest: /etc/apt/preferences.d/pdns
+
+- name: Stop systemd-resolved
+  become: true
+  ansible.builtin.systemd:
+    name: systemd-resolved
+    enabled: no
+    state: stopped
+
+- name: Create app database
+  community.postgresql.postgresql_db:
+    name: "{{ pdns_db }}"
+  become: true
+  become_user: postgres
+
+- name: "Create db user"
+  community.postgresql.postgresql_user:
+    state: present
+    name: "{{ pdns_db_user }}"
+    password: "{{ pdns_pwd }}"
+  become: true
+  become_user: postgres
+  
+- name: "Add some dummy data to our database"
+  community.postgresql.postgresql_db:
+    name: "{{ pdns_db }}"
+    state: restore
+    target: /usr/share/pdns-backend-pgsql/schema/schema.pgsql.sql
+  become: true
+  become_user: postgres
+
+- name: "Grant db user access to app db"
+  community.postgresql.postgresql_privs:
+    type: table
+    database: "{{ pdns_db }}"
+    objs: ALL_IN_SCHEMA
+    roles: "{{ pdns_db_user }}"
+    grant_option: no
+    privs: ALL
+  become: true
+  become_user: postgres
+
+- name: Configure PowerDNS config file
+  become: true
+  ansible.builtin.template:
+    src: pdns.conf.j2
+    dest: /etc/powerdns/pdns.conf
+
+- name: Restart PostgreSQL
+  become: true
+  ansible.builtin.service:
+    name: postgresql
+    state: restarted
+
+- name: Restart PowerDNS service
+  become: true
+  ansible.builtin.systemd:
+    name: pdns
+    state: restarted

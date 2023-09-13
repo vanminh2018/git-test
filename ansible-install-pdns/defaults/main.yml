@@ -1,0 +1,12 @@
+---
+# defaults file for ansible-install-sbc-fs
+
+ip_server: "test"
+pdns_db: "pdns"
+pdns_db_user: "pdnsadmin"
+pdns_pwd: "tBAfiba1DEAlK"
+pdnsadmin_salt: "H5fQLdb88Yn8mDZRpi0GQhIZ1AvdLYSq"
+pdns_apikey: "bmD3cTbpP63VsJ1RYghfovwNiMDNn9am"
+workpath: "/opt/pdns_install"
+systemReleaseVersion: "buster"
+osLabel: "debian"

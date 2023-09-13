@@ -1,0 +1,6 @@
+---
+- hosts: "{{ ip_server }}"
+  gather_facts: yes
+  become: yes
+  roles:
+    - role: ansible-install-pdns
