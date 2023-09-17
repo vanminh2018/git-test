@@ -152,3 +152,14 @@
   ansible.builtin.systemd:
     name: pdns
     state: restarted
+
+- name: Echo the information about the PDNS database and API key.
+  debug:
+    msg:
+    - "[{{ ansible_ssh_host }}] PDNS API Key: {{ pdns_apikey }}"
+    - "[{{ ansible_ssh_host }}] PDNS webserver user: admin"
+    - "[{{ ansible_ssh_host }}] PDNS webserver password: {{ pdnsadmin_salt }}"
+    - "[{{ ansible_ssh_host }}] PDNS database name: {{ pdns_db }}"
+    - "[{{ ansible_ssh_host }}] PDNS database user: {{ pdns_db_user }}"
+    - "[{{ ansible_ssh_host }}] PDNS database password: {{ pdns_pwd }}"
+    - "[{{ ansible_ssh_host }}] PDNS webserver port: 8081"
