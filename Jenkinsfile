@@ -16,6 +16,7 @@ pipeline {
                     playbook: '${WORKSPACE}/ansible-install-pdns.yml',
                     inventory: '${WORKSPACE}/hosts_all_server',
                     tags: 'setup-debian10',
+                    extras: '-vv',
                     extraVars: [
                         ip_server: [value: '${ip_server}', hidden: false]
                     ]
@@ -33,6 +34,7 @@ pipeline {
                     playbook: '${WORKSPACE}/ansible-install-pdns.yml',
                     inventory: '${WORKSPACE}/hosts_all_server',
                     tags: 'install-postgresql',
+                    extras: '-vv',
                     extraVars: [
                         ip_server: [value: '${ip_server}', hidden: false]
                     ]
@@ -45,6 +47,7 @@ pipeline {
                     playbook: '${WORKSPACE}/ansible-install-pdns.yml',
                     inventory: '${WORKSPACE}/hosts_all_server',
                     tags: 'install-pdns',
+                    extras: '-vv',
                     extraVars: [
                         ip_server: [value: '${ip_server}', hidden: false]
                     ]
@@ -53,6 +56,7 @@ pipeline {
                     playbook: '${WORKSPACE}/ansible-install-pdns.yml',
                     inventory: '${WORKSPACE}/hosts_all_server',
                     tags: 'user-messages',
+                    extras: '-vv',
                     extraVars: [
                         ip_server: [value: '${ip_server}', hidden: false]
                     ]
