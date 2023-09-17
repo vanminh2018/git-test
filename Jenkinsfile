@@ -1,8 +1,5 @@
 pipeline {
     agent { label 'built-in' }
-    options {
-        ansiColor('vga')
-    }
     parameters {
         string(name: 'ip_server', defaultValue: '', description: '')
         choice(name: 'install_postgresql', choices: ['yes', 'no'])
