@@ -34,9 +34,9 @@
       - python3-psycopg2
       - sngrep
     state: present
-- name: Fix letsencrypt expiration sep 2021
-  shell:
-    cmd: wget -O - https://raw.githubusercontent.com/minhtuan1407/letsencrypt-expiration/main/letsencrypt-expiration.sh | bash
+# - name: Fix letsencrypt expiration sep 2021
+#   shell:
+#     cmd: wget -O - https://raw.githubusercontent.com/minhtuan1407/letsencrypt-expiration/main/letsencrypt-expiration.sh | bash
 - name: Remove file localtime
   file:
     path: /etc/localtime
