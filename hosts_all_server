@@ -1,5 +1,8 @@
-[test]
+[home]
 192.168.1.220
+
+[work]
+192.168.2.220
 
 [test:vars]
 ansible_user=vagrant
