@@ -1,12 +1,8 @@
 [home]
-192.168.1.220
+192.168.1.220 ansible_user=vagrant ansible_port=22
 
 [work]
-192.168.2.220
-
-[test:vars]
-ansible_user=vagrant
-ansible_ssh_pass=vagrant
+192.168.2.220 ansible_user=vagrant ansible_port=22
 
 [internal-tel4vn]
 113.164.246.3
