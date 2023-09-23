@@ -13,8 +13,8 @@ services:
       - postgres
   postgres:
     container_name: postgres
-    restart: always
     image: postgres:12
+    restart: always
     hostname: postgres
     network_mode: "host"
     volumes:
