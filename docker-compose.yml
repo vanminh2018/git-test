@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+  fusionpbx:
+    container_name: fusionpbx
+    build:
+      dockerfile: Dockerfile
+      context: .
+    restart: always
+    hostname: fusionpbx
+    network_mode: "host"
+    depends_on:
+      - postgres
+  postgres:
+    container_name: postgres
+    restart: always
+    image: postgres:12
+    hostname: postgres
+    network_mode: "host"
+    volumes:
+      - ./initdb:/docker-entrypoint-initdb.d/
+    environment:
+      POSTGRES_USER: fusionpbx
+      POSTGRES_PASSWORD: 12345678
+      POSTGRES_MULTIPLE_DATABASES: fusionpbx, freeswitch
