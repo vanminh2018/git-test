@@ -9,6 +9,12 @@ services:
     restart: always
     hostname: fusionpbx
     network_mode: "host"
+    volumes:
+      - ./DATA/fsdata/etc/freeswitch:/etc/freeswitch
+      - ./DATA/fsdata/etc/fusionpbx:/etc/fusionpbx
+      - ./DATA/fsdata/var/lib/freeswitch:/var/lib/freeswitch
+      - ./DATA/fsdata/usr/share/freeswitch:/usr/share/freeswitch
+      - ./DATA/fsdata/var/www/fusionpbx:/var/www/fusionpbx
     depends_on:
       - postgres
   postgres:
@@ -19,6 +25,7 @@ services:
     network_mode: "host"
     volumes:
       - ./initdb:/docker-entrypoint-initdb.d/
+      - ./DATA/pgdata/var/lib/postgresql/data/:/var/lib/postgresql/data/
     environment:
       POSTGRES_USER: fusionpbx
       POSTGRES_PASSWORD: 12345678
