@@ -16,7 +16,6 @@ function init_data_docker() {
         mkdir -p "$dst"/"$folder"
         docker run $param -v "$dst"/"$(dirname "$folder")":/mount --rm --entrypoint "cp" "$image" -rp "$folder" /mount
     done
-
 }
 
 docker-compose build
