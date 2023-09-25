@@ -9,15 +9,12 @@ RUN set -x \
 	&& apt install locales -y \
 	&& locale-gen en_US.UTF-8
 
-RUN apt -y remove apache2
-
 RUN set -x \
 	&& apt -y install vim wget git nano dbus sudo nginx curl dialog \
 	qrencode net-tools lsb-release sqlite3 haveged ghostscript \
 	libtiff5-dev libtiff-tools at tftpd ssl-cert gnupg2 software-properties-common supervisor
 
 RUN set -x \
-	&& apt remove -y php* \
 	&& apt -y install apt-transport-https ca-certificates
 
 RUN set -x \
