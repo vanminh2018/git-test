@@ -96,5 +96,6 @@ RUN set -x \
 RUN rm -rf /var/cache/apt/archives /var/lib/apt/lists
 
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY fusionpbx /etc/nginx/sites-available/fusionpbx
 # VOLUME ["/etc/freeswitch", "/etc/fusionpbx", "/var/lib/freeswitch", "/usr/share/freeswitch", "/var/www/fusionpbx"]
-CMD /usr/bin/supervisord -n
+CMD /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
