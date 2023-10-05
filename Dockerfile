@@ -47,7 +47,7 @@ RUN set -x \
 	&& mkdir -p /etc/fusionpbx \
 	&& mkdir -p /var/www/fusionpbx \
 	&& mkdir -p /var/cache/fusionpbx \
-	&& git clone -b 4.4 https://github.com/fusionpbx/fusionpbx.git /var/www/fusionpbx
+	&& git clone --depth 1 --branch 4.4.1 https://github.com/fusionpbx/fusionpbx.git /var/www/fusionpbx
 
 RUN set -x \
 	&& mv /etc/freeswitch /etc/freeswitch.orig \
