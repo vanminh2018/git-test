@@ -6,6 +6,7 @@ services:
     build:
       dockerfile: Dockerfile
       context: .
+    privileged: true
     restart: always
     hostname: fusionpbx
     network_mode: "host"
@@ -15,6 +16,7 @@ services:
       - ./DATA/fsdata/var/lib/freeswitch:/var/lib/freeswitch
       - ./DATA/fsdata/usr/share/freeswitch:/usr/share/freeswitch
       - ./DATA/fsdata/var/www/fusionpbx:/var/www/fusionpbx
+      - ./fusionpbx:/etc/nginx/sites-available/fusionpbx
     depends_on:
       - postgres
   postgres:

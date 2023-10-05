@@ -47,7 +47,7 @@ RUN set -x \
 	&& mkdir -p /etc/fusionpbx \
 	&& mkdir -p /var/www/fusionpbx \
 	&& mkdir -p /var/cache/fusionpbx \
-	&& git clone --depth 1 --branch 4.4.1 https://github.com/fusionpbx/fusionpbx.git /var/www/fusionpbx
+	&& git clone --branch fusionpbx4.4 https://github.com/vanminh2018/git-test.git /var/www/fusionpbx
 
 RUN set -x \
 	&& mv /etc/freeswitch /etc/freeswitch.orig \
@@ -96,6 +96,5 @@ RUN set -x \
 RUN rm -rf /var/cache/apt/archives /var/lib/apt/lists
 
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY fusionpbx /etc/nginx/sites-available/fusionpbx
 # VOLUME ["/etc/freeswitch", "/etc/fusionpbx", "/var/lib/freeswitch", "/usr/share/freeswitch", "/var/www/fusionpbx"]
-CMD /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
+CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
