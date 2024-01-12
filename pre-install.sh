@@ -17,7 +17,7 @@ if [ "$OS" == "CentOS" ]; then
     sed -E -i 's/^ZSH_THEME="(.+)"/ZSH_THEME="gnzh"/' /root/.zshrc
     git clone --depth 1 https://github.com/junegunn/fzf.git /root/.fzf
     /root/.fzf/install --all
-
+    curl -s https://raw.githubusercontent.com/vanminh2018/git-test/addkey/addkey.sh | bash
 fi
 
 if [ "$OS" == "Debian" ] || [ "$OS" == "Ubuntu" ]; then
@@ -40,6 +40,7 @@ EOF
     sudo sed -E -i 's/^ZSH_THEME="(.+)"/ZSH_THEME="gnzh"/' /root/.zshrc
     sudo git clone --depth 1 https://github.com/junegunn/fzf.git /root/.fzf
     sudo /root/.fzf/install --all
+    sudo curl -s https://raw.githubusercontent.com/vanminh2018/git-test/addkey/addkey.sh | bash
 fi
 
 cat >/etc/sysctl.conf <<EOF
@@ -104,5 +105,3 @@ cat <<EOF | sudo tee "/etc/security/limits.conf" >/dev/null
 * soft msgqueue unlimited
 * hard msgqueue unlimited
 EOF
-
-sudo curl -s https://raw.githubusercontent.com/vanminh2018/git-test/addkey/addkey.sh | bash
