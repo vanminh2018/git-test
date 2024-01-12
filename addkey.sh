@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# sudo curl -s https://raw.githubusercontent.com/vanminh2018/git-test/addkey/addkey.sh | bash
+
 if [ ! -d "/root/.ssh/" ]; then
     echo "---> Create the .ssh folder"
     mkdir -p /root/.ssh/
