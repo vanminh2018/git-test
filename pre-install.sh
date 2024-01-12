@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# sudo curl -s https://raw.githubusercontent.com/vanminh2018/git-test/addkey/pre-install.sh | bash
+
 source /etc/os-release
 OS=$(echo "$PRETTY_NAME" | cut -d ' ' -f 1)
 
