@@ -2,6 +2,11 @@
 
 # sudo curl -s https://raw.githubusercontent.com/vanminh2018/git-test/addkey/pre-install.sh | bash
 
+if (($(id -u) != 0)); then
+    echo "Please run as root"
+    exit
+fi
+
 source /etc/os-release
 OS=$(echo "$PRETTY_NAME" | cut -d ' ' -f 1)
 
@@ -11,39 +16,31 @@ if [ "$OS" == "CentOS" ]; then
     yum update
     yum install vim nano git net-tools htop curl wget ntp yum-utils net-tools op zsh -y
     yum -y groupinstall core base "Development Tools"
-    chsh -s /usr/bin/zsh
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-    git clone https://github.com/zsh-users/zsh-autosuggestions.git /root/.oh-my-zsh/custom/plugins/zsh-autosuggestions
-    git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /root/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
-    sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' /root/.zshrc
-    sed -E -i 's/^ZSH_THEME="(.+)"/ZSH_THEME="gnzh"/' /root/.zshrc
-    git clone --depth 1 https://github.com/junegunn/fzf.git /root/.fzf
-    /root/.fzf/install --all
-    curl -s https://raw.githubusercontent.com/vanminh2018/git-test/addkey/addkey.sh | bash
 fi
 
 if [ "$OS" == "Debian" ] || [ "$OS" == "Ubuntu" ]; then
     apt-get update
     apt-get install lsb-release sudo vim nano git net-tools htop curl wget systemd systemd-sysv apt-transport-https ca-certificates dialog dirmngr build-essential zsh -y
     apt-get -y install inetutils-*
-    sudo chsh -s /usr/bin/zsh
-    if ! grep -q "export LC_ALL LANG LANGUAGE" /root/.zshrc; then
-        cat <<EOF | sudo tee -a /root/.zshrc >/dev/null
+fi
+
+chsh -s /usr/bin/zsh
+if ! grep -q "export LC_ALL LANG LANGUAGE" /root/.zshrc; then
+    cat <<EOF | tee -a /root/.zshrc >/dev/null
 LANG=en_US.UTF-8
 LANGUAGE=en_US.UTF-8
 LC_ALL=en_US.UTF-8
 export LC_ALL LANG LANGUAGE
 EOF
-    fi
-    sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-    sudo git clone https://github.com/zsh-users/zsh-autosuggestions.git /root/.oh-my-zsh/custom/plugins/zsh-autosuggestions
-    sudo git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /root/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
-    sudo sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' /root/.zshrc
-    sudo sed -E -i 's/^ZSH_THEME="(.+)"/ZSH_THEME="gnzh"/' /root/.zshrc
-    sudo git clone --depth 1 https://github.com/junegunn/fzf.git /root/.fzf
-    sudo /root/.fzf/install --all
-    sudo curl -s https://raw.githubusercontent.com/vanminh2018/git-test/addkey/addkey.sh | bash
 fi
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+git clone https://github.com/zsh-users/zsh-autosuggestions.git /root/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /root/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' /root/.zshrc
+sed -E -i 's/^ZSH_THEME="(.+)"/ZSH_THEME="gnzh"/' /root/.zshrc
+git clone --depth 1 https://github.com/junegunn/fzf.git /root/.fzf
+/root/.fzf/install --all
+curl -s https://raw.githubusercontent.com/vanminh2018/git-test/addkey/addkey.sh | bash
 
 cat >/etc/sysctl.conf <<EOF
 net.ipv6.conf.all.disable_ipv6 = 1
