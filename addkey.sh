@@ -21,3 +21,6 @@ else
     echo "UserKnownHostsFile /dev/null" >>/root/.ssh/config
     echo "---> UserKnownHostsFile has been added"
 fi
+
+chmod 700 /root/.ssh/
+chmod 600 /root/.ssh/*
