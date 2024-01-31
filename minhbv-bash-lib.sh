@@ -518,48 +518,39 @@ function runBackground() {
 
 # >>>>>>>>>>>>>>>>>>>>>>>> functions log >>>>>>>>>>>>>>>>>>>>>>>>
 function log() {
-    # Usage: log "log message" "logfile"
-    local logfile
-    if [[ -z "${2}" ]]; then
-        logfile="/dev/null"
-    else
-        logfile=${2}
+    # LOG_FILENAME=
+    if [[ "${LOG_FILENAME}" == "" ]]; then
+        LOG_FILENAME="/dev/null"
     fi
-
-    # echo "$(date +'%Y-%m-%d %H:%M:%S %Z') $(basename "$0")[$$]: $1" &>>"${logfile}"
-    echo "$(date +'%Y-%m-%d %H:%M:%S %Z') $(basename "$0")[$$]: $1"
-}
-
-function log2() {
-    # Usage: log2 "state" "log message" "logfile"
-    # declare logdatfVar="%Y-%m-%d %H:%M:%S %Z"
-    declare logdatfVar="%FT%T%z"
-    local logstrVar=""
-    local statusVar="$1"
-    local logmsgVar="$2"
-    logfileVar="$3"
-    local dateVar
-    dateVar=$(date +"$logdatfVar")
-
-    # Check that $statusvar is valid
-    case "$statusVar" in
-    EMERGENCY | ALERT | CRITICAL | ERROR | WARNING | NOTICE | INFO | DEBUG | OK | FAILED | PASSED) : ;;
-    *)
-        printf '%s\n' "Invalid state : $statusVar"
-        ;;
-    esac
-
-    # Create the log message
-    if [ -n "$logmsgVar" ]; then
-        logstrVar="$dateVar - $statusVar - $logmsgVar"
-    else
-        logstrVar="$dateVar -- empty log message"
-    fi
-
-    echo "$logstrVar"
-
-    # if [[ "${logfileVar}" ]]; then
-    #     echo "$logstrVar" >>"$logfileVar"
-    # fi
+    echo "$(date +'%Y-%m-%d %H:%M:%S %Z') $(basename "$0")[$$]: $*" &>>"${LOG_FILENAME}"
+    echo "$(date +'%Y-%m-%d %H:%M:%S %Z') $(basename "$0")[$$]: $*"
 }
 # <<<<<<<<<<<<<<<<<<<<<<<< functions log <<<<<<<<<<<<<<<<<<<<<<<<
+
+# >>>>>>>>>>>>>>>>>>>>>>>> functions postgres_query >>>>>>>>>>>>>>>>>>>>>>>>
+function postgres_query() {
+    # PGSQL_PASSWORD=
+    # PGSQL_HOSTNAME=
+    # PGSQL_PORT=
+    # PGSQL_USERNAME=
+    # PGSQL_DBNAME=
+    SQL_QUERY=$*
+
+    # -A -b -e -t -c
+    # PGPASSWORD=${PGSQL_PASSWORD} psql -h "${PGSQL_HOSTNAME}" -p "${PGSQL_PORT}" \
+    #     -U "${PGSQL_USERNAME}" -d "${PGSQL_DBNAME}" -A -b -t \
+    #     -c "${SQL_QUERY}" 2>&1
+    psql postgresql://"${PGSQL_USERNAME}":"${PGSQL_PASSWORD}"@"${PGSQL_HOSTNAME}":"${PGSQL_PORT}"/"${PGSQL_DBNAME}" \
+        -A -b -t -c "${SQL_QUERY}" 2>&1
+}
+# <<<<<<<<<<<<<<<<<<<<<<<< functions postgres_query <<<<<<<<<<<<<<<<<<<<<<<<
+
+# >>>>>>>>>>>>>>>>>>>>>>>> functions fs_cli >>>>>>>>>>>>>>>>>>>>>>>>
+function fs_query() {
+    # FS_CLI_PORT=
+    # FS_CLI_PASS=
+    # FS_HOST=
+    FS_QUERY=$*
+    fs_cli -H "${FS_HOST}" -p "${FS_CLI_PASS}" -P "${FS_CLI_PORT}" -x "${FS_QUERY}"
+}
+# <<<<<<<<<<<<<<<<<<<<<<<< functions fs_cli <<<<<<<<<<<<<<<<<<<<<<<<
