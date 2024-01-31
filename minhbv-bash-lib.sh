@@ -30,100 +30,6 @@ function args_or_stdin() {
 
 # <<<<<<<<<<<<<<<<<<<<<<<< functions args_or_stdin <<<<<<<<<<<<<<<<<<<<<<<<
 
-# >>>>>>>>>>>>>>>>>>>>>>>> functions animate >>>>>>>>>>>>>>>>>>>>>>>>
-# Usage: animate framesArray interval
-function animate() {
-    local frames=("$@")
-
-    ((lastIndex = ${#frames[@]} - 1))
-    local mode=${frames[lastIndex]}
-    unset "frames[lastIndex]"
-
-    ((lastIndex = ${#frames[@]} - 1))
-    local interval=${frames[lastIndex]}
-    unset "frames[lastIndex]"
-
-    # Comment out next two lines if you are using CTRL+C event handler.
-    trap 'tput cnorm; echo' EXIT
-    trap 'exit 127' HUP INT TERM
-
-    tput civis # hide cursor
-    tput sc    # save cursor position
-
-    tput civis # hide cursor
-    tput sc    # save cursor position
-
-    index=0
-    max="${#frames[@]}"
-    indices=()
-    direction="forward"
-    readarray -t forwardIndices < <(seq 0 1 "${max}")
-    readarray -t backwardIndices < <(seq "${max}" -1 0)
-
-    while true; do
-        if [ "${mode}" = "circular" ]; then
-            direction="forward"
-        elif [ "${mode}" = "pendular" ]; then
-            if ((index >= max)); then
-                direction="backward"
-            elif ((index <= 0)); then
-                direction="forward"
-            fi
-        else
-            echo "Wrong mode! Valid modes: circular, pendular"
-            exit 255
-        fi
-
-        if [ "${direction}" = "forward" ]; then
-            indices=("${forwardIndices[@]}")
-        else
-            indices=("${backwardIndices[@]}")
-        fi
-
-        for index in "${indices[@]}"; do
-            tput rc # restore cursor position
-            echo "${frames[$index]}"
-            sleep "${interval}"
-        done
-    done
-}
-# <<<<<<<<<<<<<<<<<<<<<<<< functions animate <<<<<<<<<<<<<<<<<<<<<<<<
-
-# >>>>>>>>>>>>>>>>>>>>>>>> functions pacMan >>>>>>>>>>>>>>>>>>>>>>>>
-# Usage: pacMan inputString interval pad
-# Example: pacman "Hello World" 0.5 "*"
-function pacMan() {
-    local string="${1}"
-    local interval="${2}"
-    : "${interval:=0.2}"
-    local pad="${3}"
-    : "${pad:=.}"
-    local length=${#string}
-    local padding=""
-
-    # Comment out next two lines if you are using CTRL+C event handler.
-    trap 'tput cnorm; echo' EXIT
-    trap 'exit 127' HUP INT TERM
-
-    tput civis # hide cursor
-    tput sc    # save cursor position
-
-    for ((i = 0; i <= length; i++)); do
-        tput rc
-        echo "${padding}c${string:i:length}"
-        sleep "$interval"
-        tput rc
-        echo "${padding}C${string:i:length}"
-        sleep "${interval}"
-        padding+="${pad}"
-    done
-
-    tput cnorm
-    tput rc
-    echo "${padding}"
-}
-# <<<<<<<<<<<<<<<<<<<<<<<< functions pacMan <<<<<<<<<<<<<<<<<<<<<<<<
-
 # >>>>>>>>>>>>>>>>>>>>>>>> functions bannerColor >>>>>>>>>>>>>>>>>>>>>>>>
 # Usage: bannerColor "my title" "red" "`"
 function bannerColor() {
@@ -255,6 +161,10 @@ function inputChoice() {
 
 # >>>>>>>>>>>>>>>>>>>>>>>> functions multichoice >>>>>>>>>>>>>>>>>>>>>>>>
 # Usage: multiChoice "header message" resultArray "comma separated options" "comma separated default values"
+# options=("one" "two" "three")
+# inputChoice "Choose:" 0 "${options[@]}"
+# choice=$?
+# echo "${options[$choice]}" selected
 # Credit: https://serverfault.com/a/949806
 function multiChoice {
     echo "${1}"
@@ -374,6 +284,13 @@ function multiChoice {
 
 # >>>>>>>>>>>>>>>>>>>>>>>> functions progress >>>>>>>>>>>>>>>>>>>>>>>>
 # Usage: progressBar "message" currentStep totalSteps
+# totalSteps=100
+# for ((currentStep = 1; currentStep <= totalSteps; currentStep++)); do
+#     sleep 0.1 # simulating one step of job
+#     progressBar "Installing foo..." "${currentStep}" "${totalSteps}"
+# done
+# echo
+
 function progressBar() {
     local bar='████████████████████'
     local space='....................'
