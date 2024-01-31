@@ -545,7 +545,7 @@ function postgres_query() {
 }
 # <<<<<<<<<<<<<<<<<<<<<<<< functions postgres_query <<<<<<<<<<<<<<<<<<<<<<<<
 
-# >>>>>>>>>>>>>>>>>>>>>>>> functions fs_cli >>>>>>>>>>>>>>>>>>>>>>>>
+# >>>>>>>>>>>>>>>>>>>>>>>> functions fs_query >>>>>>>>>>>>>>>>>>>>>>>>
 function fs_query() {
     # FS_CLI_PORT=
     # FS_CLI_PASS=
@@ -553,4 +553,4 @@ function fs_query() {
     FS_QUERY=$*
     fs_cli -H "${FS_HOST}" -p "${FS_CLI_PASS}" -P "${FS_CLI_PORT}" -x "${FS_QUERY}"
 }
-# <<<<<<<<<<<<<<<<<<<<<<<< functions fs_cli <<<<<<<<<<<<<<<<<<<<<<<<
+# <<<<<<<<<<<<<<<<<<<<<<<< functions fs_query <<<<<<<<<<<<<<<<<<<<<<<<
