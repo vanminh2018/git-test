@@ -36,26 +36,11 @@ else
     echo "PasswordAuthentication yes" >>$SSHD_CONFIG_FILE
 fi
 
-while true; do
-    read -p "Do you want to permit root login using a password? " yn
-    case $yn in
-    [Yy]*)
-        PermitRootLogin=yes
-        break
-        ;;
-    [Nn]*)
-        PermitRootLogin=prohibit-password
-        break
-        ;;
-    *) echo "Please answer yes or no." ;;
-    esac
-done
-
-if grep -q "^PermitRootLogin" $SSHD_CONFIG_FILE; then
-    sed -i "s|^PermitRootLogin.*|PermitRootLogin $PermitRootLogin|" $SSHD_CONFIG_FILE
-else
-    echo "PermitRootLogin $PermitRootLogin" >>$SSHD_CONFIG_FILE
-fi
+# if grep -q "^PermitRootLogin" $SSHD_CONFIG_FILE; then
+#     sed -i 's|^PermitRootLogin.*|PermitRootLogin prohibit-password|' $SSHD_CONFIG_FILE
+# else
+#     echo "PermitRootLogin prohibit-password" >>$SSHD_CONFIG_FILE
+# fi
 
 chmod 700 /root/.ssh/
 chmod 600 /root/.ssh/*
