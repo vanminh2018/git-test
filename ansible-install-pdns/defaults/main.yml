@@ -1,9 +1,0 @@
----
-# defaults file for ansible-install-sbc-fs
-
-ip_server: "test"
-pdns_db: "pdns"
-pdns_db_user: "pdnsadmin"
-workpath: "/opt/pdns_install"
-systemReleaseVersion: "buster"
-osLabel: "debian"
