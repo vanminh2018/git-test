@@ -1,8 +1,5 @@
 pipeline {
     agent { label 'built-in' }
-    options {
-        // ansiColor('xterm')
-    }
     parameters {
         string(name: 'ip_server', defaultValue: '', description: '')
     }
