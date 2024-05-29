@@ -2,7 +2,7 @@
 192.168.1.220 ansible_user=vagrant ansible_port=22
 
 [work]
-192.168.2.220 ansible_user=vagrant ansible_port=22
+192.168.3.220 ansible_user=vagrant ansible_port=22
 
 [internal-tel4vn]
 113.164.246.3

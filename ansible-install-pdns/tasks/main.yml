@@ -9,6 +9,9 @@
 - import_tasks: pdns.yml
   tags:
     - install-pdns
+- import_tasks: ping.yml
+  tags:
+    - ping
 # - import_tasks: user-messages.yml
 #   tags:
 #     - user-messages

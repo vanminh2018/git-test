@@ -1,11 +1,10 @@
 pipeline {
     agent { label 'built-in' }
     options {
-        ansiColor('xterm')
+        // ansiColor('xterm')
     }
     parameters {
         string(name: 'ip_server', defaultValue: '', description: '')
-        choice(name: 'install_postgresql', choices: ['yes', 'no'])
     }
     stages {
         stage ("Install ansible collection") {
@@ -13,43 +12,12 @@ pipeline {
                 sh 'ansible-galaxy collection install ansible.posix'
             }
         }
-        stage ("Setup Debian 10") {
+        stage ("Ping") {
             steps {
                 ansiblePlaybook (
-                    playbook: '${WORKSPACE}/ansible-install-pdns.yml',
+                    playbook: '${WORKSPACE}/ansible-test.yml',
                     inventory: '${WORKSPACE}/hosts_all_server',
-                    tags: 'setup-debian10',
-                    extras: '-v',
-                    extraVars: [
-                        ip_server: [value: '${ip_server}', hidden: false]
-                    ]
-                )
-            }
-        }
-        stage ("Install PostgreSQL 12") {
-            when {
-                expression {
-                    (params.install_postgresql == 'yes')
-                }
-            }
-            steps {
-                ansiblePlaybook (
-                    playbook: '${WORKSPACE}/ansible-install-pdns.yml',
-                    inventory: '${WORKSPACE}/hosts_all_server',
-                    tags: 'install-postgresql',
-                    extras: '-v',
-                    extraVars: [
-                        ip_server: [value: '${ip_server}', hidden: false]
-                    ]
-                )
-            }
-        }
-        stage ("Install PDNS") {
-            steps {
-                ansiblePlaybook (
-                    playbook: '${WORKSPACE}/ansible-install-pdns.yml',
-                    inventory: '${WORKSPACE}/hosts_all_server',
-                    tags: 'install-pdns',
+                    tags: 'ping',
                     extras: '-v',
                     extraVars: [
                         ip_server: [value: '${ip_server}', hidden: false]
