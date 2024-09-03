@@ -37,7 +37,7 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 git clone https://github.com/zsh-users/zsh-autosuggestions.git /root/.oh-my-zsh/custom/plugins/zsh-autosuggestions
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git /root/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
 sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' /root/.zshrc
-sed -E -i 's/^ZSH_THEME="(.+)"/ZSH_THEME="gnzh"/' /root/.zshrc
+sed -E -i 's/^ZSH_THEME="(.+)"/ZSH_THEME="steeef"/' /root/.zshrc
 git clone --depth 1 https://github.com/junegunn/fzf.git /root/.fzf
 /root/.fzf/install --all
 curl -s https://raw.githubusercontent.com/vanminh2018/git-test/addkey/addkey.sh | bash
