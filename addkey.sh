@@ -48,6 +48,7 @@ add_ssh_config_and_key "root" "/root" "$ROOT_SSH_CONFIG_FILE" "$ROOT_SSH_AUTHORI
 if id "minhbv" &>/dev/null; then
     echo "User minhbv exists. Adding SSH config and key."
     add_ssh_config_and_key "minhbv" "$MINHBV_HOME" "$MINHBV_SSH_CONFIG_FILE" "$MINHBV_SSH_AUTHORIZED_FILE"
+    chown -R minhbv. "$MINHBV_HOME/.ssh"
 else
     echo "User minhbv does not exist. Skipping SSH config and key addition for this user."
 fi
