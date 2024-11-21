@@ -1,68 +1,69 @@
 #!/usr/bin/env bash
 
-# sudo curl -s https://raw.githubusercontent.com/vanminh2018/git-test/addkey/addkey.sh | bash
+set -euo pipefail
+
+# Check for root privileges
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root"
+   exit 1
+fi
 
 SSHD_CONFIG_FILE="/etc/ssh/sshd_config"
-ROOT_SSH_CONFIG_FILE="/root/.ssh/config"
-ROOT_SSH_AUTHORIZED_FILE="/root/.ssh/authorized_keys"
+ROOT_HOME="/root"
 MINHBV_HOME="/home/minhbv"
-MINHBV_SSH_CONFIG_FILE="$MINHBV_HOME/.ssh/config"
-MINHBV_SSH_AUTHORIZED_FILE="$MINHBV_HOME/.ssh/authorized_keys"
 
-add_ssh_config_and_key() {
-    local user=$1
-    local home_dir=$2
-    local ssh_config_file=$3
-    local ssh_authorized_file=$4
+SSH_PUBLIC_KEY=$(cat <<'EOF'
+ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEA5K0K348mAkw8exBBGof/UHySKrEpFIaDCLHTMQF8Xugs6E8Mk8OWVrXyh3BYRMINZbyjvJmTT8D1/IJSw00RQ/zR0rfLYVFDCPCddypyuwOLgFW2iIkfQq6KYcIOn7q48WZddjz6h4xawJahZGOfLU0LZWk4odnB00SsGy8GppN2upEsCPDa301vu6QsHoT+hYmE6NeEipS4zT6E9M0OUL9OmIZuZgyrTWVQok2+11r008qUibQGUuKD+oQF4W8tKpV/k48nlltvHibKpK8B3rtwIWv9Crd36F97hVjU65T9tSlnZDFSSB+v6vRAOx4u+FU8HucZVWLlBs2qqggjDw== minhbv
+EOF
+)
 
-    if [ ! -d "$home_dir/.ssh/" ]; then
-        echo "---> Create the .ssh folder for $user"
-        mkdir -p "$home_dir/.ssh/"
-    fi
-
-    if grep -q "minhbv" "$ssh_authorized_file"; then
-        echo "---> Key minhbv EXISTS for $user!!!"
+add_or_update_config() {
+    local file=$1
+    local key=$2
+    local value=$3
+    if grep -q "^${key}" "$file"; then
+        sed -i "s|^${key}.*|${key} ${value}|" "$file"
     else
-        echo "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEA5K0K348mAkw8exBBGof/UHySKrEpFIaDCLHTMQF8Xugs6E8Mk8OWVrXyh3BYRMINZbyjvJmTT8D1/IJSw00RQ/zR0rfLYVFDCPCddypyuwOLgFW2iIkfQq6KYcIOn7q48WZddjz6h4xawJahZGOfLU0LZWk4odnB00SsGy8GppN2upEsCPDa301vu6QsHoT+hYmE6NeEipS4zT6E9M0OUL9OmIZuZgyrTWVQok2+11r008qUibQGUuKD+oQF4W8tKpV/k48nlltvHibKpK8B3rtwIWv9Crd36F97hVjU65T9tSlnZDFSSB+v6vRAOx4u+FU8HucZVWLlBs2qqggjDw== minhbv" >> "$ssh_authorized_file"
-        echo "---> Key added by minhbv for $user"
+        echo "${key} ${value}" >> "$file"
     fi
-
-    if grep -q "^UserKnownHostsFile" "$ssh_config_file"; then
-        sed -i 's|^UserKnownHostsFile.*|UserKnownHostsFile /dev/null|' "$ssh_config_file"
-    else
-        echo "UserKnownHostsFile /dev/null" >> "$ssh_config_file"
-    fi
-
-    if grep -q "^StrictHostKeyChecking" "$ssh_config_file"; then
-        sed -i 's|^StrictHostKeyChecking.*|StrictHostKeyChecking no|' "$ssh_config_file"
-    else
-        echo "StrictHostKeyChecking no" >> "$ssh_config_file"
-    fi
-
-    chmod 700 "$home_dir/.ssh/"
-    chmod 600 "$home_dir/.ssh/"*
 }
 
-add_ssh_config_and_key "root" "/root" "$ROOT_SSH_CONFIG_FILE" "$ROOT_SSH_AUTHORIZED_FILE"
+setup_ssh_for_user() {
+    local user=$1
+    local home_dir=$2
+    local ssh_dir="${home_dir}/.ssh"
+    local config_file="${ssh_dir}/config"
+    local auth_file="${ssh_dir}/authorized_keys"
+
+    mkdir -p "$ssh_dir"
+    touch "$config_file" "$auth_file"
+
+    if ! grep -q "$SSH_PUBLIC_KEY" "$auth_file" 2>/dev/null; then
+        echo "$SSH_PUBLIC_KEY" >> "$auth_file"
+        echo "---> SSH key added for $user"
+    else
+        echo "---> SSH key already exists for $user"
+    fi
+
+    add_or_update_config "$config_file" "UserKnownHostsFile" "/dev/null"
+    add_or_update_config "$config_file" "StrictHostKeyChecking" "no"
+
+    chmod 700 "$ssh_dir"
+    chmod 600 "$ssh_dir"/*
+    [[ $user != "root" ]] && chown -R "${user}:" "$ssh_dir"
+}
+
+setup_ssh_for_user "root" "$ROOT_HOME"
 
 if id "minhbv" &>/dev/null; then
-    echo "User minhbv exists. Adding SSH config and key."
-    add_ssh_config_and_key "minhbv" "$MINHBV_HOME" "$MINHBV_SSH_CONFIG_FILE" "$MINHBV_SSH_AUTHORIZED_FILE"
-    chown -R minhbv. "$MINHBV_HOME/.ssh"
+    echo "User minhbv exists. Setting up SSH."
+    setup_ssh_for_user "minhbv" "$MINHBV_HOME"
 else
-    echo "User minhbv does not exist. Skipping SSH config and key addition for this user."
+    echo "User minhbv does not exist. Skipping SSH setup for this user."
 fi
 
-if grep -q "^PasswordAuthentication" $SSHD_CONFIG_FILE; then
-    sed -i 's|^PasswordAuthentication.*|PasswordAuthentication yes|' $SSHD_CONFIG_FILE
-else
-    echo "PasswordAuthentication yes" >> $SSHD_CONFIG_FILE
-fi
-
-# if grep -q "^PermitRootLogin" $SSHD_CONFIG_FILE; then
-#     sed -i 's|^PermitRootLogin.*|PermitRootLogin prohibit-password|' $SSHD_CONFIG_FILE
-# else
-#     echo "PermitRootLogin prohibit-password" >> $SSHD_CONFIG_FILE
-# fi
+add_or_update_config "$SSHD_CONFIG_FILE" "PasswordAuthentication" "yes"
 
 systemctl reload sshd
+
+echo "SSH configuration completed successfully."
